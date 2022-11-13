@@ -309,7 +309,7 @@ class GSEs:
             cur_pca_df = pca.loc[idx].copy(deep=True)
             cur_pca_df['name'] = idx
             pca_df = pd.concat([pca_df, cur_pca_df], axis=0)
-        sns.FacetGrid(pca_df, hue="type",col='name',size=6).map(plt.scatter, "PC1", "PC2").add_legend()
+        sns.FacetGrid(pca_df, hue="type",col='name',height=6).map(plt.scatter, "PC1", "PC2").add_legend()
         return self
 
     def _reset_model(self):
