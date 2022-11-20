@@ -275,7 +275,7 @@ class GSEs:
         if self.__accuracy is not None:
             index = f'train_frac: {self.__training_frac}, test_frac: {self.__testing_frac}, seed: {self.__seed}'
             pca_df = pd.DataFrame()
-            pca_df['type'] = self.__accuracy_matrix['characteristics_ch1.0.disease state']
+            pca_df['type'] = self.__accuracy_matrix['prediction']
             pca_df['PC1'] = self.__pca[:,0]
             pca_df['PC2'] = self.__pca[:,1]
             archive = pd.DataFrame({'training_frac': [self.__training_frac], 'testing_frac': [self.__testing_frac], \
@@ -307,9 +307,9 @@ class GSEs:
         indexs = pca.index
         for idx in indexs:
             cur_pca_df = pca.loc[idx].copy(deep=True)
-            cur_pca_df['name'] = idx
+            cur_pca_df['condition'] = idx
             pca_df = pd.concat([pca_df, cur_pca_df], axis=0)
-        sns.FacetGrid(pca_df, hue="type",col='name',height=6).map(plt.scatter, "PC1", "PC2").add_legend()
+        sns.FacetGrid(pca_df, hue="type",col='condition',height=6).map(plt.scatter, "PC1", "PC2").add_legend()
         return self
 
     def _reset_model(self):
