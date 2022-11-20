@@ -24,7 +24,7 @@ class GSEs:
             accuracy (float, optional): accuracy of the model. Defaults to None.
             seed (int, optional): random state. Defaults to None.
             training_frac (float, optional): fraction of training data. Defaults to None.
-            testing_frac (float, optional): fraction of testing data. Defaults to None.
+            testCondition (str, optional): condition of test data. Defaults to None.
             archive (dataframe, optional): archive of the predict result. Defaults to empty dataframe.
         """
         
@@ -36,7 +36,7 @@ class GSEs:
         self.__training_data = None #dataframe
         self.__training_frac = None #float
         self.__testing_data = None #dataframe
-        self.__testing_frac = None #float
+        self.__testCondition = None #string
         self.__predict_matrix = None #predictions cluster number dataframe
         self.__accuracy_matrix = None #accuracy dataframe
         self.__accuracy = None #prediction accuracy in float
@@ -187,6 +187,11 @@ class GSEs:
         if train_frac !=1.0:
             self._subset(train_frac, matrix)
             matrix = self.__training_data
+            self.__testCondition = f'test on data other than training (fraction: {1-train_frac})'
+        else:
+            self.__training_data = matrix
+            self.__testing_data = matrix
+            self.__testCondition = 'test all'
 
         if 'characteristics_ch1.0.disease state' in matrix.columns: #drop the disease state column from the matrix
             matrix = matrix.drop('characteristics_ch1.0.disease state', axis=1) 
@@ -194,35 +199,38 @@ class GSEs:
         self.__model = KMeans(n_clusters=n_clusters, random_state=seed).fit(matrix)
         return self
 
-    def predict(self, matrix=None, all_data: bool=False):
+    def predict(self, test_matrix=None, testOnTrain: bool=False):
         """predict the cluster number for the testing data
 
         Args:
-            matrix (dataframe, optional): gene expression matrix. Defaults to None.
-            all_data (bool, optional): Used for fracton test_data only, TRUE will test on all_data. Defaults to False test on test_data.
+            matrix (dataframe, optional): testing gene expression matrix. Defaults to None and will use the testing data in the class.
+            testOnTrain (bool, optional): test on training data. Defaults to False.
             
         Returns:
             self: return self for a chain call
         """
-
-        if matrix is None:
-            matrix = self.__matrix
-        if all_data is False: #if all_data is false, use the testing data
-            self.__testing_frac = 1-self.__training_frac
-            if self.__testing_data is not None: #if testing data is not none, use the testing data
-                matrix = self.__testing_data # if all_data is false, use the testing data
-                if 'characteristics_ch1.0.disease state' in matrix.columns: #drop the disease state column from the matrix
-                    matrix = matrix.drop('characteristics_ch1.0.disease state', axis=1) 
+        if test_matrix is None:
+            if testOnTrain: # if testOnTrain, then use the training data for testing
+                test_matrix = self.__training_data
+                self.__testCondition = 'test on training data'
+            else:
+                test_matrix = self.__testing_data
         else:
-            self.__testing_frac = 1.0 #if all_data is true, use all data
-            self.__testing_data = matrix
+            test_matrix = test_matrix
+            self.__condition = 'test on provided data'
+            self.__testing_data = test_matrix
+        
+        # drop the disease state column from the matrix for prediction
+        if 'characteristics_ch1.0.disease state' in test_matrix.columns:
+            test_matrix = test_matrix.drop('characteristics_ch1.0.disease state', axis=1)
+        
 
-        predictions = self.__model.predict(matrix)
-        predictions = pd.DataFrame(predictions, index=matrix.index, columns=['cluster_number'])
+        predictions = self.__model.predict(test_matrix)
+        predictions = pd.DataFrame(predictions, index=test_matrix.index, columns=['cluster_number'])
         self.__predict_matrix = predictions
 
         ## run pca 
-        pca = self.pca(n_components=2,data=matrix)
+        pca = self.pca(n_components=2,data=test_matrix)
         # archive data
         self._accuracy_data()
         return self
@@ -273,7 +281,7 @@ class GSEs:
         """archive the current accuracy to the archive dataframe
         """
         if self.__accuracy is not None:
-            index = f'train_frac: {self.__training_frac}, test_frac: {self.__testing_frac}, seed: {self.__seed}'
+            index = f'train_frac: {self.__training_frac}, {self.__testCondition}, seed: {self.__seed}'
             pca_df = pd.DataFrame()
             pca_df['type'] = self.__accuracy_matrix['prediction']
             pca_df['PC1'] = self.__pca[:,0]
