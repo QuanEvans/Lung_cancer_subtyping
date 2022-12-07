@@ -15,10 +15,10 @@ The data contains 40 adenocarcinoma (AD) samples and 18 squamous cell carcinoma 
 
 The data is available in the SOFT formatted family file available under the Download header at the following link.
 https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE10245 </br>
-The SOFT formatted gz file also avaible in the data folder of this repository.
+The SOFT formatted gz file is also available in the data folder of this repository.
 
 ## Packages
-All packaes used in this project are in the Python language.
+All packages used in this project are in the Python language.
 The packages used in this project are:
 - pandas
 - sklearn
@@ -33,7 +33,7 @@ The matplotlib and seaborn packages are used to plot the data and the results.
 The pandas package is used to manipulate the data.  
 
 ### How to install the packages
-The following code woul install the packages and their dependencies:
+The following code will install the packages and their dependencies:
 ```cmd
 git clone https://github.com/QuanEvans/Lung_cancer_subtyping.git
 cd Lung_cancer_subtyping/python/gse_tools
@@ -42,17 +42,17 @@ pip install .
 
 
 ## Features
-- parse the SOFT formatted file and extract the data
-- perform the k-means clustering algorithm
-- compute the model accuracy and arhive the results
-- plot the results (bar plot accuracy and scatter plot of the clustering results)
+- Parse the SOFT formatted file and extract the data
+- Perform the k-means clustering algorithm
+- Compute the model accuracy and archive the results
+- Plot the results (bar plot accuracy and scatter plot of the clustering results)
 
 </br>
 
 ## How to run the code
 The code is written in Python language.
 The code is available in the python folder of this repository.
-We suggest to run the code in a Jupyter notebook.
+We suggest running the code in a Jupyter notebook.
 The following are example of how to run the code:
 ```python
 from gse_tools.GSEs import GSEs # or import GSEs if you install the package
@@ -69,7 +69,7 @@ gse.train_model(n_clusters=2, train_frac=0.5).predict().accuracy
 # the Datafrane of the sample lable; cluster number; and the subtype (AD or SCC) can be accessed using the following attributes
 gse.accuracy_matrix
 ```
-the bar plot of the model accuracy can be plotted using the following code:
+The bar plot of the model accuracy can be plotted using the following code:
 ```python
 gse.plot_accuracy()
 ```
@@ -77,7 +77,7 @@ gse.plot_accuracy()
 
 </br>
 
-the scatter plot of the clustering results (pca) can be plotted using the following code:
+The scatter plot of the clustering results (pca) can be plotted using the following code:
 ```python
 gse.plot_cluster()
 ```
