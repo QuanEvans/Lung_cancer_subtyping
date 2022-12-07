@@ -282,6 +282,12 @@ class GSEs:
         self._archive()
         return self
 
+    def str_accuracy(self):
+        """print the accuracy of the model
+        """
+        print(f'Accuracy of prediction on ({self.__testCondition}): {self.__accuracy*100:.4f}%')
+        return self
+
     def set_seed(self, seed):
         """set the random seed
         """
