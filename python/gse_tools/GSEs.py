@@ -89,7 +89,7 @@ class GSEs:
     
     @property
     def accuracy_matrix(self):
-        return self.__accuracy_matrix
+        return self.__accuracy_matrix 
 
     @property
     def accuracy(self):
@@ -102,6 +102,10 @@ class GSEs:
     @property
     def pca_matrix(self):
         return self.__pca
+    
+    @property
+    def testCondition(self):
+        return self.__testCondition
 
     #endregion
 
